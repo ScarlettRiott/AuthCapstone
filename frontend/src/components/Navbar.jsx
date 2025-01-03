@@ -1,18 +1,59 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-    const { isLoggedIn, isAdmin, logout } = useAuth();
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const updateAuthState = () => {
+        const token = localStorage.getItem("token");
+        const user = localStorage.getItem("user");
+
+        setIsLoggedIn(!!token);
+
+        if (user) {
+            try {
+                const parsedUser = JSON.parse(user);
+                setIsAdmin(parsedUser.role === "admin" || parsedUser.role === "management");
+            } catch (error) {
+                console.error("Failed to parse user data:", error);
+                setIsAdmin(false);
+            }
+        } else {
+            setIsAdmin(false);
+        }
+    };
+
+    useEffect(() => {
+        // Initialize state on mount
+        updateAuthState();
+
+        // Listen for changes in localStorage
+        const handleStorageChange = () => {
+            updateAuthState();
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
 
     const handleLogout = () => {
-        logout();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        // Update state to reflect logout
+        setIsLoggedIn(false);
+        setIsAdmin(false);
         navigate("/login");
     };
 
     const handleLogin = () => {
-        navigate("/login");
+        // Navigate to login page
+        navigate("/login"); // Ensure this path exists in your Routes
     };
 
     return (
@@ -50,7 +91,7 @@ const Navbar = () => {
                             ) : (
                                 <button
                                     className="btn btn-primary btn-sm"
-                                    onClick={handleLogin}
+                                    onClick={handleLogin}  // Ensure this triggers the login navigation
                                 >
                                     Login
                                 </button>

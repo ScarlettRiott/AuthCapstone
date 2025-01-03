@@ -9,13 +9,17 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log("Login button clicked"); // Debugging statement
         try {
+            console.log("Sending login request with:", { username, password });
             const { data } = await api.post("/auth/login", { username, password });
+            console.log("Login successful, received data:", data);
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user)); // Store user data, including divisions
             alert("Login successful!");
             navigate("/dashboard");
         } catch (error) {
+            console.error("Login failed:", error.response ? error.response.data : error.message);
             alert("Login failed. Check your credentials.");
         }
     };
@@ -47,15 +51,6 @@ const Login = () => {
                     </div>
                     <button type="submit" className="btn btn-primary w-100">Login</button>
                 </form>
-                <div className="text-center mt-3">
-                    <p>Don't have an account?</p>
-                    <button
-                        className="btn btn-outline-secondary w-100"
-                        onClick={() => navigate("/register")}
-                    >
-                        Register
-                    </button>
-                </div>
             </div>
         </div>
     );

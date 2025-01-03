@@ -1,30 +1,33 @@
-import React, { createContext, useState, useContext } from "react";
+// AuthContext.js
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
-
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-    const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
-    const login = (user, token) => {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-        setIsLoggedIn(true);
-        setIsAdmin(user.role === "admin" || user.role === "management");
-    };
+  const login = (userData) => {
+    setIsLoggedIn(true);
+    setUser(userData);
+  };
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setIsLoggedIn(false);
-        setIsAdmin(false);
-    };
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
+  };
 
-    return (
-        <AuthContext.Provider value={{ isLoggedIn, isAdmin, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
