@@ -11,7 +11,7 @@ const AddOUCredential = ({ ouId }) => {
         e.preventDefault();
         try {
             await api.post(
-                `/ou/${ouId}/credentials`,
+                `/ou-credentials/${ouId}`,
                 { site, username, password },
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
@@ -27,7 +27,6 @@ const AddOUCredential = ({ ouId }) => {
 
     return (
         <div>
-            <h3>Add Credential to OU</h3>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Site</label>

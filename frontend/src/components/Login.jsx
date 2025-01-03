@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -17,6 +17,7 @@ const Login = () => {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user)); // Store user data, including divisions
             alert("Login successful!");
+            onLogin(); // Update the authentication status
             navigate("/dashboard");
         } catch (error) {
             console.error("Login failed:", error.response ? error.response.data : error.message);

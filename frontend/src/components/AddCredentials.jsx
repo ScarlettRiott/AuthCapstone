@@ -27,7 +27,6 @@ const AddCredential = ({ divisionId }) => {
 
     return (
         <div>
-            <h3>Add Credential</h3>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Site</label>

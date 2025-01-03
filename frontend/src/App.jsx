@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
@@ -8,19 +8,31 @@ import AdminPanel from "./components/AdminPanel";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
-    const token = localStorage.getItem("token");
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setIsLoggedIn(!!localStorage.getItem("token"));
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
 
     return (
         <>
-            {token && <Navbar />} {/* Show Navbar only if user is logged in */}
+            <Navbar isLoggedIn={isLoggedIn} /> {/* Pass isLoggedIn as a prop */}
             <Routes>
                 <Route
                     path="/"
                     element={
-                        token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+                        isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
                     }
                 />
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} />} />
                 <Route path="/register" element={<Register />} />
                 <Route
                     path="/dashboard"
